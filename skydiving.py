@@ -15,7 +15,7 @@ class Solver:
         Solve the physical problem given
         """
         
-        def problem(self,):
+    def problem(self,):
         """
         Initialize the problem
         """
@@ -32,32 +32,35 @@ class Solver:
                 p.plot(self.x,self.t)
                 p.xlabel("Position, m/s")
                 p.ylable("time, t")
-
+                p.savefig("position.png")
+                
             if element == 1:
                 p.figure()
                 p.plot(self.v,self.t)
                 p.xlabel("Velocity, m/s")
                 p.ylable("time, t")
-        
+                p.savefig("velocity.png")
 
             if element == 2:
                 p.figure()
                 p.plot(self.Fd,self.t)
                 p.xlabel("Drag, N")
                 p.ylable("time, t")
-
+                p.savefig("drag.png")
+                
             if element == 3:
-                    p.figure()
-                    p.plot(self.Fg, self.t)
-                    p.xlabel("Gravity, N")
-                    p.ylable("time, t")
-        
+                p.figure()
+                p.plot(self.Fg, self.t)
+                p.xlabel("Gravity, N")
+                p.ylable("time, t")
+                p.savefig("gravity.png")
+                
             if element == 4:
                 p.figure()
                 p.plot(self.Fg, self.t)
                 p.xlabel("Buoyancy, N")
                 p.ylable("time, t")
-
+                p.savefig("buoyancy.png")
 
         
 if name == "__main__":
