@@ -1,0 +1,90 @@
+\documentclass[12pt, norsk, a4paper]{article}
+\usepackage{mathptmx}
+\usepackage[utf8] {inputenc}
+\usepackage[T1] {fontenc}
+\usepackage{babel, mathpple, textcomp, varioref}
+\usepackage{amssymb, amsmath, amsfonts}
+\usepackage{txfonts}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{pdflscape}
+
+\tolerance = 5000
+\hbadness = \tolerance
+\pretolerance = 2000
+
+ 
+\title{INF5620 - Mandatory Exercise 1 - Skydiving}
+\author{Ingrid Elgsaas-Vada \& Simen Tennøe \\
+        ingrielg \& simenten \\
+        \texttt{ingrielg@student.matnat.uio.no} \texttt{simetenn@gmail.com}}
+        
+\begin{document}
+\maketitle{}
+\section*{(a)}
+\begin{align*}
+F_{tot} & = ma \\
+F_{tot} &= F_g + F_d^{q} + F_b \\
+\intertext{We add an extra term $F_s$ to be used for manipulating the problem
+    to suit a spesific solution. }
+ma &= -mg -\frac{1}{2} C_D \rho A |v|v + \rho g V + F_s \\
+m \frac{dv}{dt} &= -mg - \frac{1}{2}C_D \rho A |v|v + \rho g V + F_s \\
+\frac{dv}{dt} &= -g -\frac{C_D \rho A}{2m} + \frac{\rho g V}{m} + \frac{1}{m}F_s
+\\
+\intertext{To make the expression simpler we define the constants}
+a &= \frac{C_D \rho A}{2m} \\
+b &= g \left(\frac{\rho V}{m} -1 \right) \\
+c &= \frac{1}{m}
+\intertext{Using these constants we get the expression}
+v'(t) &= -a |v|v + b + c F_s 
+\intertext{for the ODE}
+\end{align*}
+\section*{(b)}
+We now need to calculate the numerical scheme for this ODE. We use the
+Crank-Nicolson scheme. And $a$, $b$ and $c$ are constants.
+\begin{align*}
+\frac{v^{n+1}-v^n}{\Delta t} &= -a (|v|v)^{n+\frac{1}{2}} + b +
+cF_s^{n+\frac{1}{2}} \\
+\intertext{We use a geometric average to calculate $(|v|v)^{n+\frac{1}{2}}$}
+v^{n+1}-v^n &= -a \Delta t |v^n|v^{n+1} + b \Delta t + c \Delta t F_s^{n+\frac{1}{2}} \\
+v^{n+1} +a \Delta t |v^n|v^{n+1} &= v^n +b \Delta t + c \Delta t
+F_s^{n+\frac{1}{2}} \\
+v^{n+1}(1+a\Delta t |v^n|) &= v^n +b \Delta t + c \Delta t F_s^{n+\frac{1}{2}} \\
+v^{n+1} &= \frac {v^n +b \Delta t + c \Delta t F_s^{n+\frac{1}{2}}}{1+a\Delta t
+    |v^n|} \\
+\end{align*}
+\section*{(c)}
+We now assume that the ODE has a solution $\alpha t + \beta$ and we need to
+prove that this does not fit the discrete equation. \\
+We can show this using a subset of linear equations where $\beta=0$.
+We use the discrete equation 
+\[\frac{v^{n+1}-v^n}{\Delta t} = -a (|v|v)^{n+\frac{1}{2}} + b \]
+If a linear equation $\alpha t$ is the solution to this equation then both
+sides will be constants. The left hand side is the discrete definition of the
+first order derivative and as such is obviously constant and equal to $\alpha$.
+\[\frac{v^{n+1}-v^n}{\Delta t} = \frac{\alpha t^{n+1}-\alpha t^n}{\Delta t} =
+\frac{\alpha((n+1)\Delta t - n \Delta t)}{\Delta t} = \frac{\alpha \Delta t
+    (n+1-n)}{\Delta t} = \alpha \]
+Now we need to see that if the same holds for the right hand side of the
+equation.
+\begin{align*}
+-a |v^n|v^{n+1} + b &= -a |\alpha t^n|\alpha t^{n+1} + b \\
+        &= -a |\alpha n \Delta t|\alpha (n+1) \Delta t + b \\
+\intertext{We know that both $n$ and $\Delta t$ are positive}
+&= -a n(n+1) \Delta t^2 \alpha |\alpha| + b \\
+\intertext{So the left hand side of the equation changes with n and is
+    therefore not constant so a linear equation is not a solution to the
+        discrete equation.}
+\end{align*}
+To make a linear equation the solution to our problem we need to manipulate
+$F_s$. We still use the linear equation $\alpha t$ as $\beta$ is the initial
+condition and in our problem this is 0. 
+\begin{align*}
+-a |v^n|v^{n+1} + b + cF_s^{n+\frac{1}{2}} & = \alpha \\
+-a |\alpha t^n|\alpha t^{n+1} + b + cF_s^{n+\frac{1}{2}} &= \alpha \\
+cF_s^{n+\frac{1}{2}} &= \alpha + a |\alpha n \Delta t|\alpha (n+1) \Delta t - b
+\\
+cF_s^{n+\frac{1}{2}} &= \alpha + a n(n+1)\Delta t^2 |\alpha| \alpha -b \\
+F_s^{n+\frac{1}{2}} &= \frac{\alpha + a n(n+1)\Delta t^2 |\alpha| \alpha -b }{c}
+\end{align*}
+\end{document}
