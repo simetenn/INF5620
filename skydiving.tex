@@ -13,15 +13,17 @@
 \hbadness = \tolerance
 \pretolerance = 2000
 
+\renewcommand\thesection{\alph{section}}
  
 \title{INF5620 - Mandatory Exercise 1 - Skydiving}
 \author{Ingrid Elgsaas-Vada \& Simen Tennøe \\
         ingrielg \& simenten \\
-        \texttt{ingrielg@student.matnat.uio.no} \texttt{simetenn@gmail.com}}
+        \texttt{ingrielg@math.uio.no} \texttt{simetenn@gmail.com}}
         
 \begin{document}
+
 \maketitle{}
-\section*{(a)}
+\section{}
 \begin{align*}
 F_{tot} & = ma \\
 F_{tot} &= F_g + F_d^{q} + F_b \\
@@ -39,7 +41,7 @@ c &= \frac{1}{m}
 v'(t) &= -a |v|v + b + c F_s 
 \intertext{for the ODE}
 \end{align*}
-\section*{(b)}
+\section{}
 We now need to calculate the numerical scheme for this ODE. We use the
 Crank-Nicolson scheme. And $a$, $b$ and $c$ are constants.
 \begin{align*}
@@ -50,10 +52,9 @@ v^{n+1}-v^n &= -a \Delta t |v^n|v^{n+1} + b \Delta t + c \Delta t F_s^{n+\frac{1
 v^{n+1} +a \Delta t |v^n|v^{n+1} &= v^n +b \Delta t + c \Delta t
 F_s^{n+\frac{1}{2}} \\
 v^{n+1}(1+a\Delta t |v^n|) &= v^n +b \Delta t + c \Delta t F_s^{n+\frac{1}{2}} \\
-v^{n+1} &= \frac {v^n +b \Delta t + c \Delta t F_s^{n+\frac{1}{2}}}{1+a\Delta t
-    |v^n|} \\
+v^{n+1} &= \frac {v^n +b \Delta t + c \Delta t F_s^{n+\frac{1}{2}}}{1+a\Delta t |v^n|} 
 \end{align*}
-\section*{(c)}
+\section{}
 We now assume that the ODE has a solution $\alpha t + \beta$ and we need to
 prove that this does not fit the discrete equation. \\
 We can show this using a subset of linear equations where $\beta=0$.
@@ -87,4 +88,15 @@ cF_s^{n+\frac{1}{2}} &= \alpha + a |\alpha n \Delta t|\alpha (n+1) \Delta t - b
 cF_s^{n+\frac{1}{2}} &= \alpha + a n(n+1)\Delta t^2 |\alpha| \alpha -b \\
 F_s^{n+\frac{1}{2}} &= \frac{\alpha + a n(n+1)\Delta t^2 |\alpha| \alpha -b }{c}
 \end{align*}
+\section{}
+For the convergence test we use the assume the solution to the problem is
+$v(t)= \sin(\alpha t)$ and we now have to fit $F_s$ to this solution
+\begin{align*}
+-a |v^n|v^{n+1} + b + cF_s^{n+\frac{1}{2}} &= \frac{v^{n+1}-v^n}{\Delta t} \\
+-a |\sin(\alpha t^n)| \sin(\alpha t^{n+1}) + b + cF_s^{n+\frac{1}{2}} &=
+\cos(\alpha t^n) \\
+F_s^{n+\frac{1}{2}} &= \frac{\cos(\alpha n \Delta t) + a |\sin(\alpha n \Delta
+        t)| \sin (\alpha (n+1) \Delta t) - b}{c}
+\end{align*}
+
 \end{document}
