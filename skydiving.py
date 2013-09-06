@@ -17,7 +17,7 @@ class Solver(object):
 
     def forces(self):
         """
-        Calculating the forces, must be done after solve() have been run
+        Calculating the forces, must be done after solve() has been run
         """
         def Fg():
             """
@@ -141,7 +141,7 @@ class Problem(object):
 
     def initialize(self, dt, T, v0, z0, rho, m, V, test=False, tp = False):
         """
-        Initialize the problem
+        Setting values of constants for the problem
         """
         self.dt = float(dt)
         self.T = T
@@ -237,7 +237,7 @@ class Problem(object):
 
 def test_linear_solution():
     """
-    Test if a MMS linear solution gives correct answe using the Solver()
+    Test if a MMS linear solution gives correct answer using the Solver()
     """
     dt = 0.05         #Time step, s
     T = 30.           #End time for simulation, s
