@@ -31,7 +31,7 @@ def init(u, I, V, Nx, Ny, x, y, q, f, b, dx, dy, dt, scheme):
 
     for i in xrange(1, Nx-1):
         for j in xrange(1, Ny-1):
-            
+            u[i,j,-1] = u[i,j,0] - dt*V(x[i],y[j])
             
 
 
@@ -40,7 +40,7 @@ def advance(u, Nx, Ny, x, y, q, f, b, dx, dy, dt, scheme):
     dtdx2 = dt2/(2*dx**2)
     dtdy2 = dt2/(2*dy**2)
     
-    for n in xrange(1,Nt-1):
+    for n in xrange(0,Nt-1):
         for i in xrange(1, Nx-1):
             for j in xrange(1, Ny-1):
                 scheme(u,i,j,n, i+1, i-1, j+1, j-1, x, y)
