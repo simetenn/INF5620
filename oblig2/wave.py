@@ -89,29 +89,14 @@ def scheme(u, q, f, i, j, n, i2, i3, j2, j3, x ,y, dtdx2, dtdy2, dt2, dt, b):
     j2 = j+1
     j3 = j-1
     """
-    
-    """
-    u[i,j,n+1] = 2*u[i,j,n] - (1 - b*dt)*u[i,j,n-1] + \\
-    dydx2*((q(i+1,j) + q(i,j))*(u[i+1,j,n] - u(i,j,n)) - (q(i,j) + q(i-1,j)*(u[i,j,n] -u[i-1,j,n]))) + \\
-    dtdy2*((q(i,j+1) + q(i,j))*(u[i,j+1,n] - u[i,j,n]) - (q(i,j) + q(i,j-1)*(u[i,j,n] -u[i,j-1,n]))) + \\
-    dt2*f(i,j,n)
-    u[i,j,n+1] /= 1 + b*dt
-    """
 
-    #print 2*u[i,j,n]
-    #print (1 - 0.5*b*dt)*u[i,j,n-1] 
-    #print dtdx2*((q(x[i2],y[j]) + q(x[i],y[j]))*(u[i2,j,n] - u[i,j,n]) - (q(x[i],y[j]) + q(x[i3],y[j]))*(u[i,j,n] -u[i3,j,n]))
-    #print dtdy2*((q(x[i],y[j2]) + q(x[i],y[j]))*(u[i,j2,n] - u[i,j,n]) - (q(x[i],y[j]) + q(x[i],y[j3]))*(u[i,j,n] -u[i,j3,n]))
-    #print dt2*f(x[i],y[j],n)
-    
     u[i,j,n+1] = 2*u[i,j,n] - (1 - 0.5*b*dt)*u[i,j,n-1] + \
     dtdx2*((q(x[i2],y[j]) + q(x[i],y[j]))*(u[i2,j,n] - u[i,j,n]) - (q(x[i],y[j]) + q(x[i3],y[j]))*(u[i,j,n] -u[i3,j,n])) + \
     dtdy2*((q(x[i],y[j2]) + q(x[i],y[j]))*(u[i,j2,n] - u[i,j,n]) - (q(x[i],y[j]) + q(x[i],y[j3]))*(u[i,j,n] -u[i,j3,n])) + \
     dt2*f(x[i],y[j],n)
     
     u[i,j,n+1] /= 1 + 0.5*b*dt
-    #sys.exit(0)
-
+    
 def init_vec(u, I, V, x, y, dt):
     u[:,:,0] = I(x,y)
     u[:,:,-1] = u[:,:,0] - dt*V(x,y)
@@ -174,42 +159,21 @@ def scheme_vec(u, n, q, f, x ,y, dtdx2, dtdy2, dt2, b, dt, \
                istart = 1, istop = -1, i2start = 2, i2stop = None, i3start = 0, i3stop = -2,\
                jstart = 1, jstop = -1, j2start = 2, j2stop = None, j3start = 0, j3stop = -2):
 
-    """
-        print u[istart:istop,jstart:jstop,n+1].shape
-
-    print  (2*u[istart:istop,jstart:jstop,n] - (1 - 0.5*b*dt)*u[istart:istop,jstart:jstop,n-1] + \
-    dtdx2*((q(x[i2start:i2stop],y[jstart:jstop]) + q(x[istart:istop],y[jstart:jstop]))\
-           *(u[i2start:i2stop,jstart:jstop,n] - u[istart:istop,jstart:jstop,n]) \
-           - (q(x[istart:istop],y[jstart:jstop]) + q(x[i3start:i3stop],y[jstart:jstop])\
-              *(u[istart:istop,jstart:jstop,n] - u[i3start:i3stop,jstart:jstop,n]))) + \
-    dtdy2*((q(x[istart:istop],y[j2start:j2stop]) + q(x[istart:istop],y[jstart:jstop]))\
-           *(u[istart:istop,j2start:j2stop,n] - u[istart:istop,jstart:jstop,n]) \
-    - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[j3start:j3stop])\
-           *(u[istart:istop,jstart:jstop,n] -u[istart:istop,j3start:j3stop,n]))) + \
-        dt2*f(x[istart:istop],y[jstart:jstop], dt*n)).shape
-    """
     u[istart:istop,jstart:jstop,n+1] = \
         2*u[istart:istop,jstart:jstop,n] - (1 - 0.5*b*dt)*u[istart:istop,jstart:jstop,n-1] + \
         dtdx2*((q(x[i2start:i2stop],y[jstart:jstop]) + q(x[istart:istop],y[jstart:jstop]))\
                *(u[i2start:i2stop,jstart:jstop,n] - u[istart:istop,jstart:jstop,n]) \
-               - (q(x[istart:istop],y[jstart:jstop]) + q(x[i3start:i3stop],y[jstart:jstop])\
-                  *(u[istart:istop,jstart:jstop,n] - u[i3start:i3stop,jstart:jstop,n]))) + \
-    dtdy2*((q(x[istart:istop],y[j2start:j2stop]) + q(x[istart:istop],y[jstart:jstop]))\
-           *(u[istart:istop,j2start:j2stop,n] - u[istart:istop,jstart:jstop,n]) \
-    - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[j3start:j3stop])\
-        *(u[istart:istop,jstart:jstop,n] -u[istart:istop,j3start:j3stop,n]))) + \
+               - (q(x[istart:istop],y[jstart:jstop]) + q(x[i3start:i3stop],y[jstart:jstop]))\
+                  *(u[istart:istop,jstart:jstop,n] - u[i3start:i3stop,jstart:jstop,n])) + \
+        dtdy2*((q(x[istart:istop],y[j2start:j2stop]) + q(x[istart:istop],y[jstart:jstop]))\
+               *(u[istart:istop,j2start:j2stop,n] - u[istart:istop,jstart:jstop,n]) \
+    - (q(x[istart:istop],y[jstart:jstop]) + q(x[istart:istop],y[j3start:j3stop]))\
+    *(u[istart:istop,jstart:jstop,n] -u[istart:istop,j3start:j3stop,n])) + \
         dt2*f(x[istart:istop],y[jstart:jstop], dt*n)
         
     u[istart:istop,jstart:jstop,n+1] /= (1 + 0.5*b*dt)
     
-            
-    """
-    u[i:j,i:j,n+1] = 2*u[i:j,1:-2,n] - (1 - 0.5*b*dt)*u[i:j,i:j,,n-1] + \
-    dydx2*((q(x[i:j],y[i:j]) + q(x[i:j],y[i:j]))*(u[i2:j2,i:j,n] - u[i:j,i:j,n]) - (q(x[i:j],y[i:j]) + q(x[i3:j3],y[i3:j3])*(u[i:j,i:j,n] -u[i3:j3,i:j,n]))) + \
-    dtdy2*((q(x[i:j],y[i2:j2]) + q(x[i:j],y[i:j]))*(u[i:j,i2:j2,n] - u[i:j,i:j,n]) - (q(x[i:j],y[i:j]) + q(x[i:j],y[i3:j3])*(u[i:j,i:j,n] -u[i:j,i3:j3,n]))) + \
-    dt2*f(x[i:j],y[i:j],n)
-    u[i:j,i:j,n+1] /= 1 + 0.5*b*dt
-   """    
+ 
 
     
 def test_constant_solution():
@@ -234,7 +198,7 @@ def test_constant_solution():
         return 0
 
     def I(x, y):
-        return 4
+        return 10
 
     def q(x, y):
         return 5
@@ -246,12 +210,12 @@ def test_constant_solution():
     u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="scalar")
 
     def exact_solution(x, y, t):
-         return 4
+         return 10
     
     u_e = exact_solution(x, y, t)
     difference = abs(u_e - u).max()
     print "Largest difference: ", difference
-    nt.assert_almost_equal(difference, 0, places=11)
+    nt.assert_almost_equal(difference, 0, places=15)
 
 
 
@@ -280,7 +244,7 @@ def test_constant_solution_vec():
         return 10
 
     def q(x, y):
-        return 0
+        return 5
 
     def f(x, y, n):
         return 0
@@ -294,7 +258,7 @@ def test_constant_solution_vec():
     u_e = exact_solution(x, y, t)
     difference = abs(u_e - u).max()
     print "Largest difference: ", difference
-    nt.assert_almost_equal(difference, 0, places=11)
+    nt.assert_almost_equal(difference, 0, places=15)
 
 
     
