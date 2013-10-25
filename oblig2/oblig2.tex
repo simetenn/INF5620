@@ -159,13 +159,39 @@ When we input $u=C$ into the PDE we get each term becomes zero as the derivative
 u_e &= (A\cos (\omega t) + B \sin (\omega t))e^{-ct}\cos(k_xx)\cos(k_yy) \\ \\
 u_e(x,y,0) &= (A \cos(0) +B \sin (0))e^0 \cos(k_xx)\cos(k_yy) \\
 &= A\cos(k_xx)\cos(k_yy) \\ \\
-u_{e,t}(x,y,t) &= ((-A\omega\sin(\omega t) + B \omega \cos(\omega t))e^{-ct} - c(A\cos(\omega t) + B \sin (\omega t))e^{-ct})\cos(k_xx)\cos(k_yy) \\
-u_{e,t}(x,y,0) &= 0 \\
+u_{e,t}(x,y,t) &= ((-A\omega\sin(\omega t) + B \omega \cos(\omega t))e^{-ct} - c(A\cos(\omega t) + B \sin (\omega t))e^{-ct})\cos(k_xx)\cos(k_yy)
 \end{align*}
 \begin{align*}
+u_{e,t}(x,y,0) &= 0 \\
 ((-A\omega\sin(0) + B \omega \cos(0))e^{0} - c(A\cos(0) + B \sin (0))e^{0})\cos(k_xx)\cos(k_yy) &= 0 \\
 (B \omega - cA )\cos(k_xx)\cos(k_yy) &= 0 \\
 B \omega - cA &= 0 \\
 B &= \frac{cA}{\omega}
+\end{align*}
+Inputing this into the equation we get
+\begin{align*}
+u_e &= A(\cos (\omega t) + \frac{c}{\omega} \sin (\omega t))e^{-ct}\cos(k_xx)\cos(k_yy)
+\intertext{We now calculate the various derivatives so we can input this equation into the PDE}
+\frac{\partial u}{\partial t} &= Ae^{-ct}((-\omega \sin (\omega t) + c \cos(\omega t))-c(\cos(\omega t) - \frac{c}{\omega}\sin(\omega t)))\cos(k_xx)\cos(k_yy) \\
+&= Ae^{-ct}frac{-\omega^2 -c^2}{\omega}sin(\omega t)\cos(k_xx)\cos(k_yy) \\
+\frac{\partial^2 u}{\partial t^2} &= Ae^{-ct}frac{-\omega^2 -c^2}{\omega}(\omega\cos(\omega t) -c \sin(\omega t))\cos(k_xx)\cos(k_yy) \\
+\frac{\partial^2 u}{\partial x^2 } &= A(\cos(\omega t)+\frac{c}{\omega}\sin(\omega t))e^{-ct}(-k_x^2)\cos(k_xx)\cos(k_yy) \\
+\frac{\partial^2 u}{\partial x^2 } &= A(\cos(\omega t)+\frac{c}{\omega}\sin(\omega t))e^{-ct}\cos(k_xx)(-k_y^2)\cos(k_yy) \\ \\
+\frac{\partial^2 u}{\partial t^2}+b\frac{\partial u}{\partial t}&=q\frac{\partial^2 u}{\partial x^2 }+q\frac{\partial^2 u}{\partial y^2 } \\
+& Ae^{-ct}\cos(k_xx)\cos(k_yy)\frac{-(\omega^2-c^2)}{\omega}(\omega \cos(\omega t)-c\sin(\omega t)+b\sin(\omega t)) \\
+&= Ae^{-ct}\cos(k_xx)\cos(k_yy)q(-k_x^2-k_y^2)(\cos(\omega t) +\frac{c}{\omega}\sin(\omega t)) \\
+&-(\omega^2+c^2)\cos(\omega t) - \frac{\omega^2+c^2}{\omega}(b-c)\sin(\omega t) \\
+&= -q(k_x^2+k_y^2)\cos(\omega t) -q(k_x^2+k_y^2)\frac{c}{\omega}\sin(\omega t) \\
+\intertext{We now split this PDE into two equations, one containing all the cosine parts and one containing all the sine parts}
+-(\omega^2+c^2)\cos(\omega t) &= -q(k_x^2 + k_y^2)\cos(\omega t) \\
+\omega^2+c^2 &= k_x^2q+k_y^2q \\
+\omega &= \sqrt{k_x^2q+k_y^2q-c^2} \\ \\
+-\frac{\omega^2+c^2}{\omega}(b-c)\sin(\omega t) &= -q\frac{c}{\omega}(k_x^2+k_y^2)\sin(\omega t) \\
+(\omega^2+c^2)(b-c) &= qc(k_x^2+k_y^2) \\
+(q(k_x^2+k_y^2)-c^2+c^2)(b-c) &= qc(k_x^2+k_y^2) \\
+(b-c)q(k_x^2+k_y^2) &= cq(k_x^2+k_y^2) \\
+b-c &= c \\
+2c &= b \\
+c &= \frac{b}{2}
 \end{align*}
 \end{document}

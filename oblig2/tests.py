@@ -392,20 +392,20 @@ def test_mms():
 
     
 
-def physical(h, bottom):
+def physical(h, bottom, I0):
     """
-    Define the physical problem
+    Define the physical problem. Takes the type of bottom and the 
     """
     
-    b = 1
+    b = 0.2
     Lx = 2
     Ly = 2
-    h = 0.4
+    #h = 0.4
     c = 0.1
     dx = h
     dy = h
     dt = c*h
-    T = 3
+    T = 2
 
     Nx = int(round(Lx/float(dx)))
     Ny = int(round(Ly/float(dy)))
@@ -420,37 +420,37 @@ def physical(h, bottom):
 
     #Initial conditions
     def I(x, y):
-        I0 = 2
-        Ia = 1
+        #I0 = 2
+        Ia = 2
         Im = 0
         Is = 0.5
         return I0 + Ia*p.exp(-((x - Im)/Is)**2) 
 
 
     def I2(x, y):
-        I0 = 2
+        #I0 = 2
         Ia = 1
         Im = 0
-        Is = 0.5
+        Is = 0.2
         return I0 + Ia*p.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
 
     #3 different kinds of bottom shapes
     def B1(x,y):
         B0 = 0
-        Ba = 1
+        Ba = 2.5
         Bmy = 1
         Bmx = 1
-        Bs = 0.1
+        Bs = 0.4
         b = 1
         return B0 + Ba*p.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
 
 
     def B2(x,y):
         B0 = 0
-        Ba = 1
+        Ba = 2.5
         Bmy = 1
         Bmx = 1
-        Bs = 0.1
+        Bs = 0.4
         b = 1
         
         index = 0 <  p.sqrt(x**2 + y**2)
@@ -470,10 +470,10 @@ def physical(h, bottom):
     
     def B3(x,y):
         B0 = 0
-        Ba = 1
+        Ba = 2.5
         Bmy = 1
         Bmx = 1
-        Bs = 0.1
+        Bs = 0.4
         b = 1
 
         results = p.zeros((len(x),len(y)))
@@ -491,7 +491,7 @@ def physical(h, bottom):
 
     
     def H(x,y):
-        I0 = 2
+        #I0 = 2
         if (bottom == 1):
             return I0 - B1(x,y)
         elif (bottom == 2):
@@ -532,7 +532,7 @@ def physical(h, bottom):
 if __name__ == '__main__':
     "something"
     #test_constant_solution_vec()
-    #physical()
+    physical(0.3,3,4)
     #test_mms()
     #test_plug()
     #test_constant_solution()
