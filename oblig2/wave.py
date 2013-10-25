@@ -115,11 +115,11 @@ def advance_vec(u, q, f, x, y, b, dx, dy, Nt, dt):
         #boundary conditions
         #j = 0;
         
-        scheme_vec(u, n, q, f, x, y, dtdx2, dtdy2, dt2, b, dt, \
+        scheme_vec2(u, n, q, f, x, y, dtdx2, dtdy2, dt2, b, dt, \
                    jstart = 0, jstop = 1, j2start = 1, j2stop = 2, j3start = 1, j3stop = 2)
         
         #j = Ny-1
-        scheme_vec(u, n, q, f, x, y, dtdx2, dtdy2, dt2, b, dt, \
+        scheme_vec2(u, n, q, f, x, y, dtdx2, dtdy2, dt2, b, dt, \
                    jstart = -1, jstop = None, j2start = -2, j2stop = -1, j3start = -2, j3stop = -1)
 
         
