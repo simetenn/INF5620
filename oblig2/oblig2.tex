@@ -147,5 +147,25 @@ So we see that the new terms for $x$ and $y$ also have error terms  in $\Delta
 x^2$ and $\Delta y^2$ so the truncation error is of the second order also when
 $q(x,y)$ is a function.
 \section*{Verification: Constant Solution}
-
+For a constant solution we must have that $q$ is constant and for the initial conditions we get
+\begin{align*}
+u(x,y,0) &= C \\
+u_t(x,y,0) &= 0
+\end{align*}
+When we input $u=C$ into the PDE we get each term becomes zero as the derivative of a constant is zero so we get that any constant is a solution to the PDE as long as $f(x,y)=0$
+\section*{Verification: Standing, Undamped Waves}
+\section*{Verification: Standing, Damped, Waves}
+\begin{align*}
+u_e &= (A\cos (\omega t) + B \sin (\omega t))e^{-ct}\cos(k_xx)\cos(k_yy) \\ \\
+u_e(x,y,0) &= (A \cos(0) +B \sin (0))e^0 \cos(k_xx)\cos(k_yy) \\
+&= A\cos(k_xx)\cos(k_yy) \\ \\
+u_{e,t}(x,y,t) &= ((-A\omega\sin(\omega t) + B \omega \cos(\omega t))e^{-ct} - c(A\cos(\omega t) + B \sin (\omega t))e^{-ct})\cos(k_xx)\cos(k_yy) \\
+u_{e,t}(x,y,0) &= 0 \\
+\end{align*}
+\begin{align*}
+((-A\omega\sin(0) + B \omega \cos(0))e^{0} - c(A\cos(0) + B \sin (0))e^{0})\cos(k_xx)\cos(k_yy) &= 0 \\
+(B \omega - cA )\cos(k_xx)\cos(k_yy) &= 0 \\
+B \omega - cA &= 0 \\
+B &= \frac{cA}{\omega}
+\end{align*}
 \end{document}

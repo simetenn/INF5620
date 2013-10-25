@@ -3,6 +3,9 @@ from pulse import pulse
 
 
 def test_constant_solution():
+    """
+    Test if a constant solution gives correct answer, non vectorized
+    """
     b = 0
     Lx = 1.
     Ly = 1.
@@ -44,8 +47,10 @@ def test_constant_solution():
     nt.assert_almost_equal(difference, 0, places=15)
 
 
-
 def test_constant_solution_vec():
+    """
+    Test if a constant solution gives correct answer, non vectorized
+    """
     b = 0
     Lx = 10.
     Ly = 10.
@@ -70,54 +75,10 @@ def test_constant_solution_vec():
         return 10
 
     def q(x, y):
-        return 5
+        return p.array(5)
 
     def f(x, y, n):
-        return 0
-
-    
-    u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
-
-    
-    
-    def exact_solution(x, y, t):
-         return 10
-
-    u_e = exact_solution(x, y, t)
-    difference = abs(u_e - u).max()
-    print "Largest difference: ", difference
-    nt.assert_almost_equal(difference, 0, places=15)
-
-
-def test_constant_solution_vec():
-    b = 0
-    Lx = 10.
-    Ly = 10.
-
-    dx = 0.1
-    dy = 0.1
-    dt = 0.01
-    T = 1.
-
-    Nx = int(round(Lx/float(dx)))
-    Ny = int(round(Ly/float(dy)))
-    Nt = int(round(T/float(dt)))
-
-    x = p.linspace(0, Lx, Nx)
-    y = p.linspace(0, Ly, Ny)
-    t = p.linspace(0, T, Nt)
-    
-    def V(x, y):
-        return 0
-
-    def I(x, y):
-        return 10
-
-    def q(x, y):
-        return 5
-
-    def f(x, y, n):
-        return 0
+        return p.array(0)
 
 
 
@@ -135,7 +96,7 @@ def test_constant_solution_vec():
 
 
 def test_plug():
-    """Check that an initial plug is correct back after one period."""
+    """Check that an initial plug wave is correct"""
   
     b = 0
     Lx = 1.
@@ -184,10 +145,10 @@ def test_plug():
         
 
     def q(x, y):
-        return 5
+        return p.array(5)
 
     def f(x, y, n):
-        return 0
+        return p.array(0)
 
 
     u_vx = solver(Ix, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
@@ -209,6 +170,10 @@ def test_plug():
 
 
 def test_undampened():
+    """
+    Making a convergence test for a undampened wave
+    """
+  
     b = 0
     Lx = 10.
     Ly = 10.
@@ -221,10 +186,10 @@ def test_undampened():
         return u_e(x, y, 0)
       
     def q(x, y):
-        return 10
+        return p.array(10)
 
     def f(x, y, n):
-        return 0
+        return p.array(0)
 
 
     def u_e(x,y,t):
@@ -254,37 +219,19 @@ def test_undampened():
     E = []
     c = 0.1
     h_list = p.linspace(5, 0.5, n)
-    #h_list = [0.01]
     for h in h_list: 
 
         Nx = int(round(Lx/float(h)))
         Ny = int(round(Ly/float(h)))
-        #Nt = int(round(T/float(c*h)))
-        
-        
-        
         x = p.linspace(0, Lx, Nx)
         y = p.linspace(0, Ly, Ny)
-        #t = p.linspace(0, T, Nt)
         
         u = solver(I, V, q, f, b, Lx, h, Ly, h, T, c*h, version="vectorized")
-        #xx,yy = p.meshgrid(x,y)
         v_e = u_e(x,y,T)
 
         
-        # print
-        # print v_e[:,:,-1]
-        #print "----------------"
-        #print u[:,:,-1]
-        #sys.exit()
-        
         E.append(abs(v_e - u[:,:,-1]).max())
 
-        #xx,yy = p.meshgrid(x,y)
-        #p.np.save("u", u)
-    #p.np.save("h",B1(xx,yy))
-    #p.np.save("x",x)
-    #p.np.save("y",y)
     E = p.array(E)
     rate = p.zeros(n-1)
     for i in xrange(1, n):
@@ -297,10 +244,11 @@ def test_undampened():
 
 
 
-
-
-
 def test_dampened():
+    """
+    Making a convergence test for a dampened wave
+    """
+    
     b = 1
     Lx = 10.
     Ly = 10.
@@ -314,10 +262,10 @@ def test_dampened():
         return u_e(x, y, 0)
     
     def q(x, y):
-        return 10
+        return p.array(10)
 
     def f(x, y, n):
-        return 0
+        return p.array(0)
 
     def u_e(x,y,t):
         A = 1
@@ -337,7 +285,6 @@ def test_dampened():
     E = []
     c = 0.1
     h_list = p.linspace(5, 0.05, n)
-    #h_list = [0.01]
     for h in h_list: 
         Nx = int(round(Lx/float(h)))
         Ny = int(round(Ly/float(h)))
@@ -355,7 +302,6 @@ def test_dampened():
     for i in xrange(1, n):
         rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
 
-        #print E/h_list**2
     print rate
     diff = abs(expected_rate - rate[-1])
     nt.assert_almost_equal(diff, 0 ,places=1)
@@ -363,11 +309,14 @@ def test_dampened():
 
 
 def test_mms():
-    b = 1
+    """
+    Making a convergence test, using MMS to get a source term
+    """
+  
+    b = 0
     Lx = 10.
     Ly = 10.
     T = 10.
- 
     
     def V(x, y):
         return 0
@@ -376,10 +325,26 @@ def test_mms():
         return u_e(x, y, 0)
     
     def q(x, y):
-        return 10
+        return x
 
-    def f(x, y, n):
-        return 0
+    def f(x, y, t):
+        A = 1
+        B = 0
+        mx = 1
+        my = 1
+        kx = mx*p.pi/Lx
+        ky = my*p.pi/Ly
+        c = b/2. 
+        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+
+        #The source term, using q = x, and dq/dx = 1, dq/dy = 0
+        return p.cos(kx*x)*p.cos(kx*x)*p.exp(-c*t)*((c**2-c-omega**2)*(A*p.cos(omega*t) +B*p.sin(omega*t)) +\
+                                            (omega - 2*c*omega)*(-A*p.sin(omega*t)+B*p.cos(omega*t))) -\
+                                            (A*p.cos(omega*t) + B*p.sin(omega))*p.exp(-c*t)*\
+                                            (-q(x,y)*p.cos(kx*x)*p.cos(ky*y) -\
+                                             kx*p.sin(kx*x)*p.cos(ky*y))
+
+  
 
     def u_e(x,y,t):
         A = 1
@@ -395,7 +360,7 @@ def test_mms():
 
         
     expected_rate = 2
-    n = 20
+    n = 10
     E = []
     c = 0.1
     h_list = p.linspace(5, 0.05, n)
@@ -413,6 +378,7 @@ def test_mms():
         E.append(abs(v_e - u[:,:,-1]).max())
 
     E = p.array(E)
+    print E
     rate = p.zeros(n-1)
     for i in xrange(1, n):
         rate[i-1] = p.log(E[i-1]/E[i])/p.log(h_list[i-1]/h_list[i])
@@ -426,15 +392,20 @@ def test_mms():
 
     
 
-def physical():
+def physical(h, bottom):
+    """
+    Define the physical problem
+    """
+    
     b = 1
     Lx = 2
     Ly = 2
-
-    dx = 0.1
-    dy = 0.1
-    dt = 0.01
-    T = 1
+    h = 0.4
+    c = 0.1
+    dx = h
+    dy = h
+    dt = c*h
+    T = 3
 
     Nx = int(round(Lx/float(dx)))
     Ny = int(round(Ly/float(dy)))
@@ -447,29 +418,29 @@ def physical():
     def V(x, y):
         return 0
 
-    
+    #Initial conditions
     def I(x, y):
         I0 = 2
         Ia = 1
-        Im = 1
-        Is = 0.5*p.sqrt(2)
+        Im = 0
+        Is = 0.5
         return I0 + Ia*p.exp(-((x - Im)/Is)**2) 
 
 
     def I2(x, y):
         I0 = 2
         Ia = 1
-        Im = 1
+        Im = 0
         Is = 0.5
         return I0 + Ia*p.exp(-((x - Im)/Is)**2-((y.reshape(-1,1) - Im)/Is)**2) 
 
-
+    #3 different kinds of bottom shapes
     def B1(x,y):
         B0 = 0
         Ba = 1
         Bmy = 1
         Bmx = 1
-        Bs = p.sqrt(2)*0.5
+        Bs = 0.1
         b = 1
         return B0 + Ba*p.exp(-((x - Bmx)/Bs)**2-((y - Bmy)/(b*Bs))**2) 
 
@@ -477,9 +448,9 @@ def physical():
     def B2(x,y):
         B0 = 0
         Ba = 1
-        Bmy = 5
-        Bmx = 5
-        Bs = 3
+        Bmy = 1
+        Bmx = 1
+        Bs = 0.1
         b = 1
         
         index = 0 <  p.sqrt(x**2 + y**2)
@@ -488,36 +459,21 @@ def physical():
         
         results =  B0 + Ba*p.cos(p.pi*((x - Bmx)/(2*Bs)))*p.cos(p.pi*(y - Bmy)/(2*Bs)) 
 
-        
+        #Temporary solution to make sure that the boundaries for the box are working correctly. 
+        #Fix this once it have been tested
         for i in xrange(len(x)):
             for j in xrange(len(y)):
                 if (0 > p.sqrt((x[i])**2 + (y[j])**2) >= Bs):
                     results[i,j] = B0
         
-        """
-        results = p.zeros((len(x),len(y)))
-        index = x > Bmx - Bs 
-        index2 = x < (Bmx + Bs)
-        xindex = p.invert(index - index2)
-        index = y > Bmy - Bs 
-        index2 = y < (Bmy + Bs)
-        yindex = p.invert(index - index2)
-        results[:,:] =  B0
-        results[xindex*yindex] = B0 + Ba
-        """
-        #print index
-        #print index2
-        #results[not (index[0])] = B0
-        #results[not index2] = B0
-        #print results
         return results
     
     def B3(x,y):
         B0 = 0
         Ba = 1
-        Bmy = 5
-        Bmx = 5
-        Bs = 1
+        Bmy = 1
+        Bmx = 1
+        Bs = 0.1
         b = 1
 
         results = p.zeros((len(x),len(y)))
@@ -536,27 +492,35 @@ def physical():
     
     def H(x,y):
         I0 = 2
-        return I0 - B1(x,y)
+        if (bottom == 1):
+            return I0 - B1(x,y)
+        elif (bottom == 2):
+            return I0 - B2(x,y)
+        else:
+            return I0 - B3(x,y)
 
+            
     def q(x, y):
         return 9.81*H(x,y)
 
 
     def f(x, y, n):
-        return 0
+        return p.array(0)
 
 
 
     u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vectorized")
+    
 
-    #print u[:,:,-1]
-    #u = solver(I, V, q, f, b, Lx, dx, Ly, dy, T, dt, version="vecto")
-
-    #print u[:,:,-1]
-    #print y.reshape(-1,1)
-    xx,yy = p.meshgrid(x,y)
+    #Save the arrays
     p.np.save("u", u)
-    p.np.save("h",B1(x,y.reshape(-1,1)))
+    if (bottom == 1):
+        p.np.save("h",B1(x,y.reshape(-1,1)))
+    elif (bottom == 2):
+        p.np.save("h",B2(x,y.reshape(-1,1)))
+    else:
+        p.np.save("h",B3(x,y.reshape(-1,1)))
+        
     p.np.save("x",x)
     p.np.save("y",y)
     
@@ -566,8 +530,10 @@ def physical():
 
     
 if __name__ == '__main__':
+    "something"
     #test_constant_solution_vec()
-    physical()
+    #physical()
+    #test_mms()
     #test_plug()
     #test_constant_solution()
     #test_dampened()
