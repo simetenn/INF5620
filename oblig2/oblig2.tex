@@ -1,0 +1,151 @@
+\documentclass[12pt, norsk, a4paper]{article}
+\usepackage{mathptmx}
+\usepackage[utf8] {inputenc}
+\usepackage[T1] {fontenc}
+\usepackage{babel, mathpple, textcomp, varioref}
+\usepackage{amssymb, amsmath, amsfonts}
+\usepackage{txfonts}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{pdflscape}
+
+\tolerance = 5000
+\hbadness = \tolerance
+\pretolerance = 2000
+
+ 
+\title{INF5620 - Mandatory Exercise 2}
+\author{Ingrid Elgsaas-Vada \& Simen Tennøe \\
+        ingrielg \& simenten \\
+        \texttt{ingrielg@math.uio.no} \texttt{simetenn@gmail.com}}
+
+\begin{document}
+\maketitle{}
+In this project we look at the standard two-dimensional, standard, linear wave
+equation, with damping:
+\begin{align*}
+\frac{\partial^2 u}{\partial t^2} + b \frac{\partial u}{\partial t} &=
+\frac{\partial}{\partial x}\left( q(x,y) \frac{\partial u}{\partial x} \right)
+    + \frac{\partial}{\partial y} \left( q(x,y) \frac{\partial u}{\partial
+            y}\right) + f(x,y,t)
+\end{align*}
+We have the boundary condition
+\begin{align*}
+\frac{\partial u}{\partial n} &= 0
+\intertext{and the inital conditions are}
+u(x,y,0) &= I(x,y) \\
+u_t(x,y,0) &= V(x,y)
+\end{align*}
+\section*{Discretization}
+We start by finding the general scheme for computing $u_{i,j}^{n+1}$ at the
+interior spatial mesh points.
+\begin{align*}
+\frac{u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1}}{\Delta t^2} + & b
+\frac{u_{i,j}^{n+1}-u_{i,j}^{n-1}}{2\Delta t} = \frac{1}{\Delta x}
+\left(q_{i+\frac{1}{2},j} \left( \frac{u_{i+1,j}^n - u_{i,j}^n}{\Delta x}\right)
+    - q_{i-\frac{1}{2},j} \left( \frac{u_{i,j}^n - u_{i-1,j}^n}{\Delta x}\right)\right) \\
+    & + \frac{1}{\Delta y} \left( q_{i,j+\frac{1}{2}} \left( \frac{u_{i,j+1}^n 
+    - u_{i,j}^n}{\Delta y} \right) - q_{i,j-\frac{1}{2}} \left( \frac{u_{i,j}^n
+    - u_{i,j-1}^n}{\Delta y}\right)\right) + f_{i,j}^n \\
+\frac{u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1}}{\Delta t^2} &= - b
+\frac{u_{i,j}^{n+1}-u_{i,j}^{n-1}}{2\Delta t} \\ & + \frac{1}{\Delta x^2} \left(
+        \frac{1}{2}\left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \frac{1}{2}  \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{1}{\Delta y^2} \left(
+        \frac{1}{2}\left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \frac{1}{2} \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + f_{i,j}^n \\
+u_{i,j}^{n+1}-2u_{i,j}^n+u_{i,j}^{n-1} &=  \frac{-b \Delta t}{2} (u_{i,j}^{n+1}-u_{i,j}^{n-1}) \\
+        &+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+u_{i,j}^{n+1} + \frac{b \Delta t}{2}u_{i,j}^{n+1} &= 2u_{i,j}^n-u_{i,j}^{n-1}
++ \frac{b \Delta t}{2}u_{i,j}^{n-1} \\
+ &+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+\left(1+\frac{b \Delta t}{2}\right)u_{i,j}^{n+1} &= 2u_{i,j}^n - 
+\left(1 - \frac{b \Delta t}{2}\right)u_{i,j}^{n-1} \\
+&+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n \\
+u_{i,j}^{n+1} &= \frac{1}{1+\frac{b \Delta t}{2}} \left( \right.
+2u_{i,j}^n - 
+\left(1 - \frac{b \Delta t}{2}\right)u_{i,j}^{n-1} \\
+&+\frac{\Delta t^2}{2 \Delta x^2} \left(
+        \left( q_{i+1,j} - q_{i,j} \right) \left(u_{i+1,j}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i-1,j} \right)
+        \left( u_{i,j}^n - u_{i-1,j}^n \right)\right) \\
+        &+ \frac{\Delta t^2}{2 \Delta y^2} \left(
+        \left( q_{i,j+1} - q_{i,j} \right) \left(u_{i,j+1}^n 
+        - u_{i,j}^n \right) - \left(q_{i,j}-q_{i,j-1} \right)
+        \left( u_{i,j}^n - u_{i,j-1}^n \right)\right) + \Delta t^2f_{i,j}^n
+        \left. \right)
+\end{align*}
+Before we can use the general scheme we need to use the initial conditions to
+calculate values for two steps so we can start the calculation. We calculate
+values for the ghost cells $u_{i,j}^{-1}$ in addition to the values for
+$u_{i,j}^0$ and then we can use the general scheme. We get \[u_{i,j}^0 =
+I(x_i,y_j)\] directly from the first initial condition.
+To get the values to $n = -1$ requires some calculation
+\begin{align*}
+u_t(x,y,0) &= V(x,y) \\
+\frac{u_{i,j}^0 - u_{i,j}^{-1}}{\Delta t} &= V_{i,j} \\
+u_{i,j}^{-1} &= u_{i,j}^0 - \Delta t V_{i,j}
+\end{align*}
+For the boundaries we use the boundary condition \[\frac{\partial u}{\partial
+    n} = 0 \]
+For the end point $N_x$ we can use this as
+\begin{align*}
+\frac{u_{N_x + 1,j}^n - u_{N_x-1,j}^n}{2\Delta x} &= 0 \\
+u_{N_x+1,j}^n &= u_{N_x-1,j}^n
+\end{align*}
+The same argument holds for all the other three boundaries.
+To calculate the values for the boundaries we can then just input these
+equalities in the general scheme.
+\section*{Truncation Error}
+We start by finding the truncation error when $q$ is constant.
+We write the scheme in compact notation
+\[\left[D_tD_tu + b D_{2t}u = qD_xD_xu + qD_yD_yu + f\right]_{i,j}^n\]
+If we now input the exact solution $u_e$ we now know from the lecture foils that 
+\[\left[D_tD_tu_e + bD_{2t}u_e = qD_xD_xu_e+qD_yD_yu_e + f + R\right]_{i,j}^n\]
+where the truncation error $R^n$ is given by
+\begin{align*}
+R_{i,j}^n &= \frac{1}{12}u_{e,tttt}(x_i,y_j,t_n) \Delta t^2 +
+\frac{1}{6}u_{e,ttt}(x_i,y_j,t_n)\Delta t^2 +
+\frac{1}{12}u_{e,xxxx}(x_i,y_j,t_n)\Delta x^2 +
+\frac{1}{12}u_{e,yyyy}(x_i,y_j,t_n)\Delta y^2 \\ 
+& + \mathcal{O}(\Delta t^4, \Delta x^4, \Delta y^4)
+\end{align*}
+We see from this that the error for the scheme goes as $\Delta t^2, \Delta x^2,
+   \Delta y^2$ \\ \\
+We now look at the case where $q(x,y)$ is a function.
+This gives us the scheme written in compact notation:
+\[\left[D_tD_tu + b D_{2t}u = D_x\bar{q}^{x}D_xu + D_y\bar{q}^xD_yu + f\right]_{i,j}^n\]
+We now insert the exact solution
+\[\left[D_tD_tu_e + b D_{2t}u_e = D_x\bar{q}^{x}D_xu_e + D_y\bar{q}^yD_yu_e + f\right]_{i,j}^n\]
+From the lecture notes we know that the truncation error for
+\[\left[D_x\bar{q}^xD_xu_e\right]_{i,j}^n = \frac{\partial}{\partial x}
+q(x_i,y_j)u_{e,x}(x_i,y_j,t_n) + \mathcal{O}(\Delta x^2)\]
+So we see that the new terms for $x$ and $y$ also have error terms  in $\Delta
+x^2$ and $\Delta y^2$ so the truncation error is of the second order also when
+$q(x,y)$ is a function.
+\section*{Verification: Constant Solution}
+
+\end{document}
