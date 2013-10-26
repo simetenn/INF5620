@@ -154,6 +154,14 @@ u_t(x,y,0) &= 0
 \end{align*}
 When we input $u=C$ into the PDE we get each term becomes zero as the derivative of a constant is zero so we get that any constant is a solution to the PDE as long as $f(x,y)=0$
 \section*{Verification: Standing, Undamped Waves}
+We know from the truncation analysis that the truncation error is given as $\mathcal{O}(\Delta t^2, \Delta x^2, \Delta y^2)$ so the error only depends on the discretization parameters. \\
+If we now define
+\begin{align*}
+\Delta t &= C_1 h \\
+\Delta x &= C_2 h \\
+\Delta y &= C_3 h
+\end{align*}
+We now get that the error can be described by $\mathcal{O}(C_1h, C_2h, C_3h)$ so we now have that the truncation error goes as $Ch^2$. In the code we have a slight problem, we added a convergence test get that the test goes towards 0 and not 2, as we would expect, and for the same reason we do not get a constant $E/h^2$.
 \section*{Verification: Standing, Damped, Waves}
 \begin{align*}
 u_e &= (A\cos (\omega t) + B \sin (\omega t))e^{-ct}\cos(k_xx)\cos(k_yy) \\ \\
@@ -194,4 +202,41 @@ b-c &= c \\
 2c &= b \\
 c &= \frac{b}{2}
 \end{align*}
+Here we get the same problem, the convergence test goes towards 0 instead of the expected 2, so there must be something wrong either in in the scheme or in the convergence test itself. As the results we get from the physical solution seems reasonable, we suspect the error is in the convergence test.
+\section*{Verification: Manufactured Solution}
+\begin{align*}
+\frac{\partial u}{ \partial t} &= e^{-ct}\cos(k_xx)\cos(k_yy)(-A\omega \sin(\omega t) + B \omega\cos(\omega t) -Ac\cos(\omega t) -Bc \sin(\omega)) \\
+&= e^{-ct}\cos(k_xx)\cos(k_yy)(\omega(-A\sin(\omega t)+B\cos(\omega t))-c(A\cos(\omega t)+B\sin(\omega t)))\\
+\frac{\partial^2u}{\partial t^2} &= e^{-ct}\cos(k_xx)\cos(k_yy) ((-\omega^2+c^2)(A\cos(\omega t)+B\sin(k_yy)) - 2\omega c(-Asin(\omega t) + B\cos(\omega t))) \\
+\frac{\partial }{\partial x}\left(q(x,y) \frac{\partial u}{\partial x}\right) &= e^{-ct}(A\cos(\omega t)+B\sin(\omega t))\cos(k_yy)\frac{\partial}{\partial x} \left(q (-k_x \sin(k_xx)) \right) \\
+&= e^{-ct}(A\cos(\omega t)+B\sin(\omega t))\cos(k_yy)(\frac{\partial q}{\partial x}(-k_x\sin(k_xx))-qk_x^2\cos(k_xx)) \\
+\frac{\partial }{\partial y}\left(q(x,y) \frac{\partial u}{\partial y}\right) &=
+e^{-ct}(A\cos(\omega t)+B\sin(\omega t))\cos(k_xx)(\frac{\partial q}{\partial y}(-k_y\sin(k_yy))-qk_y^2\cos(k_yy)) \\ \\
+\frac{\partial^2u}{\partial t^2} +b\frac{\partial u}{ \partial t} &= \frac{\partial }{\partial x}\left(q(x,y) \frac{\partial u}{\partial x}\right) +\frac{\partial }{\partial y}\left(q(x,y) \frac{\partial u}{\partial y}\right) +f \\
+&(c^2-bc-\omega^2)(A\cos(\omega t)+B\sin(\omega t)) + (b\omega -2c\omega)(-A\sin(\omega t) + B\cos(\omega t))\\ &= (A\cos(\omega t)+B\sin(\omega t))(-q(k_x^2+k_y^2)\cos(k_xx)\cos(k_yy)\\ &-k_x\frac{\partial q}{\partial x}\sin(k_xx)\cos(k_yy)-k_y\frac{\partial q}{\partial y}\sin(k_yy)\cos(k_xx))+f \\
+f &= (c^2-bc-\omega^2)(A\cos(\omega t)+B\sin(\omega t)) + (b\omega -2c\omega)(-A\sin(\omega t) + B\cos(\omega t))\\ 
+&-(A\cos(\omega t)+B\sin(\omega t))(-q(k_x^2+k_y^2)\cos(k_xx)\cos(k_yy)\\ &-k_x\frac{\partial q}{\partial x}\sin(k_xx)\cos(k_yy)-k_y\frac{\partial q}{\partial y}\sin(k_yy)\cos(k_xx)) \\
+f &= (c^2-bc-\omega^2)(A\cos(\omega t)+B\sin(\omega t)) + (b\omega -2c\omega)(-A\sin(\omega t) + B\cos(\omega t))\\ 
+&+(A\cos(\omega t)+B\sin(\omega t))(q(k_x^2+k_y^2)\cos(k_xx)\cos(k_yy)\\ &+k_x\frac{\partial q}{\partial x}\sin(k_xx)\cos(k_yy)+k_y\frac{\partial q}{\partial y}\sin(k_yy)\cos(k_xx)) \\
+f &= (c^2-bc-\omega^2+q(k_x^2+k_y^2)\cos(k_xx)\cos(k_yy)+k_x\frac{\partial q}{\partial x}\sin(k_xx)\cos(k_yy)\\ &+k_y\frac{\partial q}{\partial y}\sin(k_yy)\cos(k_xx))(A\cos(\omega t)+B\sin(\omega t))\\ & + (b\omega -2c\omega)(-A\sin(\omega t) + B\cos(\omega t))\\ \\
+%Implementasjonen av denne bør du skjekke litt grundig i programmet. Oppdaget at jeg hadde gjort et par feil i utregningen.
+\intertext{We now have the source term $f(x,y,t)$. We now need to find the corresponding $I$ and $V$. To do this we use the original solution $u_e$ as the $f$ is only involved in the calculation of the PDE and not in finding the initial conditions.}
+%Dette utsagnet er jeg veldig usikker på, men kan ikke komme på noen bedre/annen løsning/forklaring. Kan heller ikke skjønne hvordan jeg eventuelt skulle brukt f her.
+u(x,y,0) &= u_e(x,y,0) \\
+&= A\cos(k_xx)\cos(k_yy) \\
+u_t(x,y,0) &= u_{e,t}(x,y,0) \\
+&= (\omega(-A\sin(0)+B\cos(0))-c(A\cos(0)+B\sin(0)))e^{0}\cos(k_xx)\cos(k_yy) \\
+&= (\omega B - cA)\cos(k_xx)\cos(k_yy)
+%Veldig usikker på om dette blir riktig eller om vi skal ha u_t(x,y,0)=0 slik som i forrige oppgave. Eller om vi skal ha noe helt annet for den saks skyld.
+\end{align*}
+In this case we have a slightly larger problem with the code, as we get an alternating source of error. But as of yet we haven't been able to figure out why.
+
+\section*{Investigate a physical problem}
+We performed a series of calculations and generated several plots for different initial height of the wave, different shape of the bottom and different resolutions. As can be seen we get the behaviour we expect. The closer we are to the hill, the larger the effect of the bottom shape. Worse resolution gives more numerical noise, we also see that the sharp edges od the third bottom shape give large errors when close to the hill. One can take a look at the movies, they are very descriptive.
+
+
+\section*{Visualization}
+The additional task we elected to do was to create a fancy 3D visualization using Matplotlib.
+
+
 \end{document}

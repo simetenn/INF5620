@@ -319,7 +319,15 @@ def test_mms():
     T = 10.
     
     def V(x, y):
-        return 0
+        A = 1
+        B = 0
+        mx = 1
+        my = 1
+        kx = mx*p.pi/Lx
+        ky = my*p.pi/Ly
+        c = b/2. 
+        omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
+        return (omega*B - c*A)*p.cos(kx*x)*p.cos(ky*y)
 
     def I(x, y):
         return u_e(x, y, 0)
@@ -338,11 +346,9 @@ def test_mms():
         omega = p.sqrt(kx**2*q(x,y) + ky**2*q(x,y) - c**2)
 
         #The source term, using q = x, and dq/dx = 1, dq/dy = 0
-        return p.cos(kx*x)*p.cos(kx*x)*p.exp(-c*t)*((c**2-c-omega**2)*(A*p.cos(omega*t) +B*p.sin(omega*t)) +\
-                                            (omega - 2*c*omega)*(-A*p.sin(omega*t)+B*p.cos(omega*t))) -\
-                                            (A*p.cos(omega*t) + B*p.sin(omega))*p.exp(-c*t)*\
-                                            (-q(x,y)*p.cos(kx*x)*p.cos(ky*y) -\
-                                             kx*p.sin(kx*x)*p.cos(ky*y))
+        return (c**2-b*c-omega**2 + x*(kx**2+ky**2)*p.cos(kx*x)*p.cos(ky*y) +\
+                kx*p.sin(kx*x)*p.cos(ky*y))*(A*p.cos(omega*t) + B*p.sin(omega*t)) +\
+                (b*omega - 2*c*omega)*(-A*p.sin(omega*t) + B*p.cos(omega*t))
 
   
 
@@ -532,8 +538,8 @@ def physical(h, bottom, I0):
 if __name__ == '__main__':
     "something"
     #test_constant_solution_vec()
-    physical(0.3,3,4)
-    #test_mms()
+    #physical(0.4,3,4)
+    test_mms()
     #test_plug()
     #test_constant_solution()
     #test_dampened()
